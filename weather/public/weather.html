@@ -1,0 +1,98 @@
+<html>
+
+<head>
+    <title>City Finder</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <section>
+        <nav class="column" id="column1">
+            <div>
+                <h3>Find A Utah City</h3>
+            </div>
+            <form id="weatherForm">
+                Enter A Utah City: <input type="text" id="cityfield" value=""><br> Suggestion: <span id="txtHint">Empty</span>
+                <input id="weatherButton" type="submit" value="Submit">
+                <p>Current Weather</p>
+                <div id="weather">No weather</div>
+            </form>
+            <script>
+                $("#cityfield").keyup(function() {
+                    var url = "getcity?q=" + $("#cityfield").val();
+                    $.getJSON(url, function(data) {
+                        var everything;
+                        everything = "<ul>";
+                        $.each(data, function(i, item) {
+                            everything += "<li> " + data[i].city;
+                        });
+                        everything += "</ul>";
+                        $("#txtHint").html(everything);
+                    });
+                });
+            </script>
+            <script>
+                $("#weatherButton").click(function(e) {
+                    var value = $("#cityField").val();
+                    console.log(value);
+                    e.preventDefault();
+                    var myurl = "https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=a7235be9a1739a8501627a5b12b69010&q=";
+                    myurl += $("#cityfield").val();
+                    console.log(myurl);
+                    $.ajax({
+                        url: myurl,
+                        dataType: "json",
+                        success: function(parsed_json) {
+                            var location = parsed_json['name'];
+                            var weather = parsed_json['weather'][0]['main'];
+                            var temp = parsed_json['main']['temp'];
+                            var weather_icon = parsed_json['weather'][0]['icon'];
+                            var humidity = parsed_json['main']['humidity'];
+                            var temp_min = parsed_json['main']['temp_min'];
+                            var temp_max = parsed_json['main']['temp_max'];
+                            var wind_speed = parsed_json['wind']['speed'];
+                            var everything = "<img src=\"http://openweathermap.org/img/w/" + weather_icon + ".png\"/ width=\"100\" height=\"100\">";
+                            everything += "<ul>";
+                            everything += "<li>Location: " + location;
+                            everything += "<li>Weather: " + weather + " (" + temp + "&#8457;)";
+                            everything += "<li>Low: " + temp_min + "&#8457; | High: " + temp_max + "&#8457;";
+                            everything += "<li>Humidity: " + humidity + "%";
+                            everything += "<li>Wind: " + wind_speed + " mph";
+                            everything += "</ul>";
+                            $("#weather").html(everything);
+                        }
+                    });
+                });
+            </script>
+        </nav>
+        <article id="column2">
+            <h4>Dictionary Search</h4>
+            <form>
+                Enter a Word to Define: <input type="text" id="mydict" value=""></span>
+                <button id="dictbutton">Submit</button> Definition:
+                <span id="results"></span>
+            </form>
+            <script>
+                $("#dictbutton").click(function(event) {
+                    event.preventDefault();
+                    var url = "dictionary?q=";
+                    url += $("#mydict").val();
+                    console.log(url);
+                    $.getJSON(url, function(data) {
+                        console.log(data);
+                        var everything = "<ul>";
+                        $.each(data, function(i, item) {
+                            everything += "<li>" + data[i].defenition + "</li>";
+                        });
+                        everything += "</ul>";
+                        $("#results").html(everything);
+                    });
+                });
+            </script>
+        </article>
+    </section>
+</body>
+
+</html>
